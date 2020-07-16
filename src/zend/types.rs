@@ -4,7 +4,6 @@ use std::fmt::{Debug, Formatter};
 use std::os::raw::c_void;
 use std::ptr::null;
 use std::{fmt, slice};
-// use crate::zend::php_echo;
 
 pub struct ExecuteData {}
 pub struct ModuleDep {}

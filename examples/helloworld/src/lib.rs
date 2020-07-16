@@ -1,19 +1,19 @@
 extern crate libc;
 extern crate solder;
 
-use solder::*;
-use solder::zend::*;
 use solder::info::*;
+use solder::zend::*;
+use solder::*;
 
 #[no_mangle]
-pub extern fn php_module_info() {
+pub extern "C" fn php_module_info() {
     print_table_start();
     print_table_row("A demo PHP extension written in Rust", "enabled");
     print_table_end();
 }
 
 #[no_mangle]
-pub extern fn get_module() -> *mut zend::Module {
+pub extern "C" fn get_module() -> *mut zend::Module {
     let function = FunctionBuilder::new(c_str!("hello_world"), hello_world)
         .with_arg(ArgInfo::new(c_str!("name"), 0, 0, 0))
         .build();
@@ -24,9 +24,8 @@ pub extern fn get_module() -> *mut zend::Module {
         .into_raw()
 }
 
-
 #[no_mangle]
-pub extern fn hello_world(_data: &ExecuteData, retval: &mut Zval) {
+pub extern "C" fn hello_world(_data: &ExecuteData, retval: &mut Zval) {
     let mut name_zval = Zval::new_as_null();
     php_parse_parameters!(&mut name_zval);
     let name = String::try_from(name_zval).ok().unwrap();
