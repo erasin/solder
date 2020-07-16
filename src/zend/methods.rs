@@ -26,9 +26,16 @@ pub fn php_echo(message: &str) {
 /// ```
 pub fn execute_closure(callable: &mut Zval, params: &mut [Zval]) -> Zval {
     let mut returner = Zval::new_as_null();
-    unsafe{
+    unsafe {
         let mut callable_name = Zval::from(zend_get_callable_name(callable));
-        _call_user_function_ex(callable, &mut callable_name, &mut returner, params.len() as u32, params.as_mut_ptr(), 0);
+        _call_user_function_ex(
+            callable,
+            &mut callable_name,
+            &mut returner,
+            params.len() as u32,
+            params.as_mut_ptr(),
+            0,
+        );
         free_zend_string(callable_name.value.string);
     };
     returner
@@ -83,13 +90,9 @@ pub trait PhpParseParameters {
 
 impl PhpParseParameters for [&mut Zval; 1] {
     fn parse_parameters(self: &mut Self) {
-        let value_1 = ZendValue{long_value: 0};
+        let value_1 = ZendValue { long_value: 0 };
         unsafe {
-            zend_parse_parameters(
-                1,
-                c_str!("z"),
-                &value_1,
-            );
+            zend_parse_parameters(1, c_str!("z"), &value_1);
             add_zend_value_to_zval(value_1, self[0]);
         }
     }
@@ -97,15 +100,10 @@ impl PhpParseParameters for [&mut Zval; 1] {
 
 impl PhpParseParameters for [&mut Zval; 2] {
     fn parse_parameters(self: &mut Self) {
-        let value_1 = ZendValue{long_value: 0};
-        let value_2 = ZendValue{long_value: 0};
+        let value_1 = ZendValue { long_value: 0 };
+        let value_2 = ZendValue { long_value: 0 };
         unsafe {
-            zend_parse_parameters(
-                2,
-                c_str!("zz"),
-                &value_1,
-                &value_2,
-            );
+            zend_parse_parameters(2, c_str!("zz"), &value_1, &value_2);
             add_zend_value_to_zval(value_1, self[0]);
             add_zend_value_to_zval(value_2, self[1]);
         }
@@ -114,17 +112,11 @@ impl PhpParseParameters for [&mut Zval; 2] {
 
 impl PhpParseParameters for [&mut Zval; 3] {
     fn parse_parameters(self: &mut Self) {
-        let value_1 = ZendValue{long_value: 0};
-        let value_2 = ZendValue{long_value: 0};
-        let value_3 = ZendValue{long_value: 0};
+        let value_1 = ZendValue { long_value: 0 };
+        let value_2 = ZendValue { long_value: 0 };
+        let value_3 = ZendValue { long_value: 0 };
         unsafe {
-            zend_parse_parameters(
-                3,
-                c_str!("zzz"),
-                &value_1,
-                &value_2,
-                &value_3,
-            );
+            zend_parse_parameters(3, c_str!("zzz"), &value_1, &value_2, &value_3);
             add_zend_value_to_zval(value_1, self[0]);
             add_zend_value_to_zval(value_2, self[1]);
             add_zend_value_to_zval(value_3, self[2]);
@@ -134,19 +126,12 @@ impl PhpParseParameters for [&mut Zval; 3] {
 
 impl PhpParseParameters for [&mut Zval; 4] {
     fn parse_parameters(self: &mut Self) {
-        let value_1 = ZendValue{long_value: 0};
-        let value_2 = ZendValue{long_value: 0};
-        let value_3 = ZendValue{long_value: 0};
-        let value_4 = ZendValue{long_value: 0};
+        let value_1 = ZendValue { long_value: 0 };
+        let value_2 = ZendValue { long_value: 0 };
+        let value_3 = ZendValue { long_value: 0 };
+        let value_4 = ZendValue { long_value: 0 };
         unsafe {
-            zend_parse_parameters(
-                4,
-                c_str!("zzzz"),
-                &value_1,
-                &value_2,
-                &value_3,
-                &value_4,
-            );
+            zend_parse_parameters(4, c_str!("zzzz"), &value_1, &value_2, &value_3, &value_4);
             add_zend_value_to_zval(value_1, self[0]);
             add_zend_value_to_zval(value_2, self[1]);
             add_zend_value_to_zval(value_3, self[2]);
@@ -157,11 +142,11 @@ impl PhpParseParameters for [&mut Zval; 4] {
 
 impl PhpParseParameters for [&mut Zval; 5] {
     fn parse_parameters(self: &mut Self) {
-        let value_1 = ZendValue{long_value: 0};
-        let value_2 = ZendValue{long_value: 0};
-        let value_3 = ZendValue{long_value: 0};
-        let value_4 = ZendValue{long_value: 0};
-        let value_5 = ZendValue{long_value: 0};
+        let value_1 = ZendValue { long_value: 0 };
+        let value_2 = ZendValue { long_value: 0 };
+        let value_3 = ZendValue { long_value: 0 };
+        let value_4 = ZendValue { long_value: 0 };
+        let value_5 = ZendValue { long_value: 0 };
         unsafe {
             zend_parse_parameters(
                 5,
@@ -183,7 +168,7 @@ impl PhpParseParameters for [&mut Zval; 5] {
 
 fn add_zend_value_to_zval(value: ZendValue, zval: &mut Zval) {
     unsafe {
-        let zval_from_value = *value.zval;
+        let zval_from_value = &*value.zval;
         zval.value = zval_from_value.value;
         zval.type_info = zval_from_value.type_info;
         zval.u2 = zval_from_value.u2;
